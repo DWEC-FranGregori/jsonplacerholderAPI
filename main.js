@@ -2,13 +2,21 @@
 
 const SERVER = "https://jsonplaceholder.typicode.com";
 
-const idUser = prompt("Introduce la id del user");
+startRequests();
 
-firstMethod(idUser);
-secondMethod();
-thirdMethod();
-fourthMethod();
-fiveMethod(idUser);
+async function startRequests() {
+  const idUser = prompt("Introduce la id del usuario a buscar");
+  try {
+    const userById = await firstAjaxRequest(idUser);
+    console.log(`${userById.id} - ${userById.name} - ${userById.username}`);
+    console.log(await secondAjaxRequest(idUser));
+    console.log(await thirdAjaxRequest());
+    console.log(await fourthAjaxRequest());
+    console.log(await fiveAjaxRequest(idUser));
+  } catch (error) {
+    console.error(error);
+  }
+}
 
 async function getUserById(idUser) {
   const response = await fetch(SERVER + `/users/${idUser}`);
@@ -19,7 +27,7 @@ async function getUserById(idUser) {
   return data;
 }
 
-async function getTodosById(idTodos) {
+async function getTodoById(idTodos) {
   const response = await fetch(SERVER + `/todos/${idTodos}`);
   if (!response.ok) {
     throw `Error ${response.status} de la BBDD: ${response.statusText}`;
@@ -66,34 +74,33 @@ async function createData(data) {
   return response.json();
 }
 
-async function firstMethod(idUser) {
-  const userById = await getUserById(idUser);
-  console.log(`${userById.id} - ${userById.name} - ${userById.username}`);
+async function firstAjaxRequest(idUser) {
+  return await getUserById(idUser);
 }
 
-async function secondMethod() {
-  console.log(await getAllTodosById(2));
+async function secondAjaxRequest(idUser) {
+  return await getAllTodosById(idUser);
 }
 
-async function thirdMethod() {
-  console.log(await deleteTask(4));
+async function thirdAjaxRequest() {
+  const idTask = prompt("Introduce la id de la tarea que quieres borrar");
+  return await deleteTask(idTask);
 }
 
-async function fourthMethod() {
-  const dataUpdated = await updateData(1, { completed: "Fran" });
-  console.log(dataUpdated);
+async function fourthAjaxRequest() {
+  const idTask = prompt("Introduce la id de la tarea que quieres modificar");
+  const dataUpdated = await updateData(idTask, { completed: "Fran" });
+  return dataUpdated;
 }
 
-async function fiveMethod(userId) {
+async function fiveAjaxRequest(userId) {
   const title = prompt("Introduzca el título de la web");
-  const user = await getTodosById(userId);
-  console.log("EYYYYY");
-  console.log(user);
+  const user = await getTodoById(userId);
   const taskToAdd = await createData({
-    userId: userId,
+    userId: Number.parseInt(userId),
     id: user.id,
     title: title,
     completed: false,
   });
-  console.log(taskToAdd);
+  return taskToAdd;
 }
