@@ -7,12 +7,22 @@ startRequests();
 async function startRequests() {
   const idUser = prompt("Introduce la id del usuario a buscar");
   try {
-    const userById = await firstAjaxRequest(idUser);
+    const userById = await requestGetUserById(idUser);
     console.log(`${userById.id} - ${userById.name} - ${userById.username}`);
-    console.log(await secondAjaxRequest(idUser));
-    console.log(await thirdAjaxRequest());
-    console.log(await fourthAjaxRequest());
-    console.log(await fiveAjaxRequest(idUser));
+
+    console.log(await requestGetAllUsersById(idUser));
+
+    const idTaskToDelete = prompt(
+      "Introduce la id de la tarea que quieres borrar"
+    );
+    console.log(await requestDeleteTaskById(idTaskToDelete));
+
+    const idTaskToUpdate = prompt(
+      "Introduce la id de la tarea que quieres modificar"
+    );
+    console.log(await requestUpdateTaskById(idTaskToUpdate));
+
+    console.log(await requestAddTodo(idUser));
   } catch (error) {
     console.error(error);
   }
@@ -74,26 +84,23 @@ async function createData(data) {
   return response.json();
 }
 
-async function firstAjaxRequest(idUser) {
+async function requestGetUserById(idUser) {
   return await getUserById(idUser);
 }
 
-async function secondAjaxRequest(idUser) {
+async function requestGetAllUsersById(idUser) {
   return await getAllTodosById(idUser);
 }
 
-async function thirdAjaxRequest() {
-  const idTask = prompt("Introduce la id de la tarea que quieres borrar");
+async function requestDeleteTaskById(idTask) {
   return await deleteTask(idTask);
 }
 
-async function fourthAjaxRequest() {
-  const idTask = prompt("Introduce la id de la tarea que quieres modificar");
-  const dataUpdated = await updateData(idTask, { completed: "Fran" });
-  return dataUpdated;
+async function requestUpdateTaskById(idTask) {
+  return await updateData(idTask, { completed: "Fran" });
 }
 
-async function fiveAjaxRequest(userId) {
+async function requestAddTodo(userId) {
   const title = prompt("Introduzca el título de la web");
   const user = await getTodoById(userId);
   const taskToAdd = await createData({
